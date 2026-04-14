@@ -1,23 +1,22 @@
-# Call booking calendar project
+# Call Booking Calendar — TypeSpec Project
 
-## TypeSpec module structure
-
-- `spec/main.tsp` — TypeSpec source
-- `spec/tspconfig.yaml` — TypeSpec compiler config (emits OpenAPI 3.0)
-- `spec/tsp-output/@typespec/openapi3/openapi.yaml` — generated output (committed)
+## Structure
+- `prompts/*` - Stored prompts
+- `spec/main.tsp` — TypeSpec source defining the Appointment Management API
+- `spec/tspconfig.yaml` — Emits OpenAPI 3.0 via `@typespec/openapi3`
+- `spec/tsp-output/@typespec/openapi3/openapi.yaml` — generated output
 - `spec/package.json` — npm dependencies
 
 ## Commands
 
 ```bash
 cd spec && npm install
-npm run tsp -- compile   # or: npx tsp compile
+npx tsp compile   # generates openapi.yaml
 ```
 
-## CI check
+CI runs: `npm install && tsp compile`
 
-The Hexlet CI workflow (`hexlet-check.yml`) runs `npm install && tsp compile`. The `tsp-output/` directory is gitignored — output is generated locally during CI validation.
+## Notes
 
-## Package manager
-
-Use `npm` (pinned to 11.12.1 in `packageManager` field). Do not switch to pnpm or yarn.
+- `tsp-output/` is gitignored — output generated locally during CI
+- Use `npm` (pinned to 11.12.1)

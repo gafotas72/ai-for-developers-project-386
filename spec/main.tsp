@@ -39,6 +39,15 @@ model Slot {
   state: SlotState;
 }
 
+model SlotInfo {
+  id: int64;
+  event_title: string;
+  guest_name: string;
+  slot_title: string;
+  start_time: utcDateTime;
+  end_time: utcDateTime;
+}
+
 @error
 model Error {
   code: int32;
@@ -72,7 +81,7 @@ interface Users {
 @route("/event-types")
 interface EventTypes {
   @doc("List event types with pagination")
-  @get list(@query user_id: int64, @query limit?: int32, @query offset?: int32): {
+  @get list(@query user_id?: int64, @query limit?: int32, @query offset?: int32): {
     @statusCode statusCode: 200;
     @body body: EventType[];
   } | {
@@ -140,7 +149,7 @@ interface Slots {
   };
 
   @doc("List filled slots by owner")
-  @route("/by-owner") @get listByOwner(@query owner_id: int64, @query limit?: int32, @query offset?: int32): {
+  @route("/by-owner") @get listByOwner(@query owner_id: int64, @query start_time: plainDate, @query limit?: int32, @query offset?: int32): {
     @statusCode statusCode: 200;
     @body body: Slot[];
   } | {
@@ -152,6 +161,18 @@ interface Slots {
   @route("/by-event-type") @get listByEventType(@query event_type_id: int64, @query date: plainDate): {
     @statusCode statusCode: 200;
     @body body: Slot[];
+  } | {
+    @statusCode statusCode: 500;
+    @body body: Error;
+  };
+}
+
+@route("/slot-infos")
+interface SlotInfos {
+  @doc("List slot infos by owner with pagination")
+  @get listByOwner(@query owner_id: int64, @query start_time: plainDate, @query limit?: int32, @query offset?: int32): {
+    @statusCode statusCode: 200;
+    @body body: SlotInfo[];
   } | {
     @statusCode statusCode: 500;
     @body body: Error;
