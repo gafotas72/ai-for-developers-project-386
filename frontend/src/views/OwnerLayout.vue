@@ -7,7 +7,7 @@
 
     <v-tabs-window v-model="activeTab">
       <v-tabs-window-item value="event-types">
-        <EventTypesPage @refresh="refreshEventTypes" />
+        <EventTypesPage ref="eventTypesRef" />
       </v-tabs-window-item>
       <v-tabs-window-item value="slots">
         <BookedSlotsPage ref="slotsRef" />
@@ -25,10 +25,13 @@ import BookedSlotsPage from './owner/BookedSlotsPage.vue'
 const route = useRoute()
 const router = useRouter()
 const activeTab = ref('event-types')
+const eventTypesRef = ref(null)
 const slotsRef = ref(null)
 
 watch(activeTab, (newTab) => {
-  if (newTab === 'slots' && slotsRef.value) {
+  if (newTab === 'event-types' && eventTypesRef.value) {
+    eventTypesRef.value.refresh()
+  } else if (newTab === 'slots' && slotsRef.value) {
     slotsRef.value.refresh()
   }
   router.replace({ path: '/owner', query: { tab: newTab } })
@@ -41,8 +44,4 @@ watch(() => route.query.tab, (newTab) => {
     activeTab.value = 'event-types'
   }
 }, { immediate: true })
-
-function refreshEventTypes() {
-  // Handled by EventTypesPage
-}
 </script>

@@ -55,7 +55,7 @@
               show-adjacent-months
               color="primary"
               hide-header
-              @update:model-value="fetchSlots"
+              @update:model-value="fetchSlots(true, true)"
             />
           </v-col>
 
@@ -68,7 +68,7 @@
               <v-list lines="two" class="border" style="max-height: 350px; overflow-y: auto;">
                 <v-list-item
                   v-for="slot in paginatedSlots"
-                  :key="slot.id"
+                  :key="slot.start_time"
                 >
                   <template v-slot:prepend>
                     <v-chip
@@ -81,6 +81,7 @@
                   </template>
                   <v-list-item-title>
                     {{ formatTime(slot.start_time) }} - {{ formatTime(slot.end_time) }}
+                    <span v-if="slot.title" class="text-caption text-grey ml-2">({{ slot.title }})</span>
                   </v-list-item-title>
                   <template v-slot:append>
                     <v-btn
@@ -93,7 +94,7 @@
                       Забронировать
                     </v-btn>
                     <v-btn
-                      v-else
+                      v-if="slot.state === 'Filled' && slot.id > 0 && slot.guest_id === guest?.id"
                       color="error"
                       size="small"
                       variant="tonal"
@@ -152,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, shallowRef, computed, watch, onMounted } from 'vue'
 import { useApi } from '@/composables/useApi'
 import { useUsers } from '@/composables/useApi'
 
@@ -160,7 +161,7 @@ const api = useApi()
 const { guest, fetchUsers } = useUsers()
 
 const eventTypes = ref([])
-const slots = ref([])
+const slots = shallowRef([])
 const selectedEventType = ref(null)
 const selectedDate = ref(null)
 const loading = ref(false)
@@ -181,26 +182,28 @@ const slotsTotalPages = computed(() => Math.ceil(slots.value.length / slotsPerPa
 const paginatedSlots = computed(() => {
   const start = (slotsPage.value - 1) * slotsPerPage.value
   const end = start + slotsPerPage.value
-  return slots.value.slice(start, end)
+  return slots.value.slice(start, end).slice()
 })
 
+function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const today = new Date()
-const minDateFormatted = today.toISOString().split('T')[0]
+const minDateFormatted = getLocalDateString(today)
 const maxDateFormatted = computed(() => {
   const max = new Date(today)
   max.setDate(today.getDate() + 14)
-  return max.toISOString().split('T')[0]
-})
-
-watch(selectedDate, () => {
-  slotsPage.value = 1
+  return getLocalDateString(max)
 })
 
 function selectEventType(eventType) {
   selectedEventType.value = eventType
-  selectedDate.value = today.toISOString().split('T')[0]
-  slotsPage.value = 1
-  fetchSlots()
+  selectedDate.value = getLocalDateString(today)
+  fetchSlots(true)
 }
 
 function formatTime(isoString) {
@@ -225,13 +228,28 @@ async function loadEventTypes() {
   }
 }
 
-async function fetchSlots() {
+async function fetchSlots(shouldResetPage = false, shouldClear = false) {
   if (!selectedEventType.value || !selectedDate.value) return
+  const currentPage = slotsPage.value
+  if (shouldClear) {
+    slots.value = []
+  }
   loading.value = true
   try {
-    const response = await api.listByEventType(selectedEventType.value.id, selectedDate.value)
-    slots.value = response.data.sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
-    slotsPage.value = 1
+    const dateStr = typeof selectedDate.value === 'string'
+      ? selectedDate.value
+      : getLocalDateString(selectedDate.value)
+    const response = await api.listByEventType(selectedEventType.value.id, dateStr)
+    const newSlots = response.data.map(slot => ({ ...slot }))
+    slots.value = newSlots
+    if (shouldResetPage) {
+      slotsPage.value = 1
+    } else {
+      const maxPage = Math.ceil(newSlots.length / slotsPerPage.value)
+      if (currentPage > maxPage && maxPage > 0) {
+        slotsPage.value = maxPage
+      }
+    }
   } catch (error) {
     console.error(error)
   } finally {
@@ -262,15 +280,15 @@ async function bookSlot() {
     }
     await api.update_2(currentSlot.value.id, updatedSlot)
     showBookDialog.value = false
-    await fetchSlots()
+    await fetchSlots(false, true)
   } catch (error) {
     console.error(error)
   }
 }
 
-function confirmCancel(slot) {
+async function confirmCancel(slot) {
   if (confirm('Отменить бронирование?')) {
-    cancelSlot(slot)
+    await cancelSlot(slot)
   }
 }
 
@@ -286,7 +304,7 @@ async function cancelSlot(slot) {
       state: 'Free'
     }
     await api.update_2(slot.id, updatedSlot)
-    await fetchSlots()
+    await fetchSlots(false, true)
   } catch (error) {
     console.error(error)
   }

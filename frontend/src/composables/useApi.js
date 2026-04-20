@@ -29,6 +29,8 @@ export function useUsers() {
         api.getOwner(),
         api.getGuest()
       ])
+      console.log('getOwner response:', ownerRes)
+      console.log('getGuest response:', guestRes)
       owner.value = ownerRes.data
       guest.value = guestRes.data
     } catch (e) {

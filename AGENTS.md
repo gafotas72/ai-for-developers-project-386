@@ -6,6 +6,8 @@
 - `spec/tspconfig.yaml` — Emits OpenAPI 3.0 via `@typespec/openapi3`
 - `spec/tsp-output/@typespec/openapi3/openapi.yaml` — generated output
 - `spec/package.json` — npm dependencies
+- `frontend` - frontend web application that uses rest api requests to the backend
+- `backend` - backend rest api server that uses openapi.yaml to implement rest api interface
 
 ## Commands
 

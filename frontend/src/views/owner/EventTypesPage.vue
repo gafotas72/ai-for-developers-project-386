@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useApi } from '@/composables/useApi'
 import { useUsers } from '@/composables/useApi'
 
@@ -94,6 +94,13 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const totalCount = ref(0)
 const formRef = ref(null)
+
+watch(owner, (newOwner) => {
+  console.log('owner changed:', newOwner)
+  if (newOwner?.id) {
+    loadEventTypes()
+  }
+}, { immediate: true })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
 
@@ -123,18 +130,23 @@ const headers = [
 ]
 
 async function loadEventTypes() {
-  if (!owner.value?.id) return
+  console.log('loadEventTypes called, owner:', owner.value)
+  if (!owner.value?.id) {
+    console.warn('Owner not loaded yet, skipping loadEventTypes')
+    return
+  }
   
   loading.value = true
   try {
     const offset = (currentPage.value - 1) * pageSize.value
     const response = await api.list(owner.value.id, pageSize.value, offset)
+    console.log('event-types response:', response)
     eventTypes.value = response.data
     totalCount.value = response.headers['x-total-count'] 
       ? parseInt(response.headers['x-total-count']) 
       : eventTypes.value.length
   } catch (error) {
-    console.error(error)
+    console.error('Failed to load event types:', error)
   } finally {
     loading.value = false
   }
@@ -153,6 +165,11 @@ function openEditDialog(eventType) {
 }
 
 async function saveEventType() {
+  if (!owner.value?.id) {
+    console.error('Owner not loaded')
+    return
+  }
+  
   const { valid } = await formRef.value.validate()
   if (!valid) return
   
@@ -196,6 +213,11 @@ function confirmDelete(eventType) {
 }
 
 async function deleteEventType(eventType) {
+  if (!owner.value?.id) {
+    console.error('Owner not loaded')
+    return
+  }
+  
   try {
     await api._delete(eventType.id)
     await loadEventTypes()
@@ -204,8 +226,16 @@ async function deleteEventType(eventType) {
   }
 }
 
+function refresh() {
+  loadEventTypes()
+}
+
+defineExpose({ refresh })
+
 onMounted(async () => {
+  console.log('EventTypesPage mounted')
   await fetchUsers()
+  console.log('After fetchUsers, owner:', owner.value)
   await loadEventTypes()
 })
 </script>

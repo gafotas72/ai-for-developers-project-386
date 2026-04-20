@@ -33,13 +33,57 @@ const vuetify = createVuetify({
     fallback: 'ru',
     messages: {
       ru: {
-        itemsPerPage: 'Строк на странице',
         noDataText: 'Нет данных',
-        loadingText: 'Загрузка...',
+        loading: 'Загрузка...',
+        dataIterator: {
+          loadingText: 'Загрузка',
+          noResultsText: 'Не найдено',
+          noDataText: 'Нет данных'
+        },
         dataFooter: {
           itemsPerPageText: 'Строк на странице',
           itemsPerPageAll: 'Все',
-          pageText: 'Страница'
+          pageText: 'Страница',
+          nextPage: 'Следующая страница',
+          prevPage: 'Предыдущая страница',
+          firstPage: 'Первая страница',
+          lastPage: 'Последняя страница'
+        },
+        pagination: {
+          ariaLabel: {
+            root: 'Переход по страницам',
+            previous: 'Предыдущая',
+            next: 'Следующая',
+            first: 'Первая страница',
+            last: 'Последняя страница',
+            page: 'Страница {0}',
+            currentPage: 'Страница {0}'
+          }
+        },
+        input: {
+          clear: 'Очистить {0}'
+        },
+        datePicker: {
+          itemsSelected: 'Выбрано: {0}',
+          range: {
+            title: 'Выберите даты',
+            header: 'Введите даты'
+          },
+          title: 'Выберите дату',
+          header: 'Введите дату',
+          input: {
+            placeholder: 'Введите дату'
+          },
+          ariaLabel: {
+            previousMonth: 'Предыдущий месяц',
+            nextMonth: 'Следующий месяц',
+            selectYear: 'Выберите год',
+            previousYear: 'Предыдущий год',
+            nextYear: 'Следующий год',
+            selectMonth: 'Выберите месяц',
+            selectDate: '{0}',
+            currentDate: 'Сегодня, {0}'
+          }
         }
       }
     }
