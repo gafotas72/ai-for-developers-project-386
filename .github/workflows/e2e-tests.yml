@@ -39,7 +39,7 @@ jobs:
       - name: Start backend
         run: |
           cd backend
-          nohup ./gradlew bootJar > /tmp/backend.log 2>&1 &
+          nohup ./gradlew bootRun > /tmp/backend.log 2>&1 &
           echo $!
         shell: bash
 
