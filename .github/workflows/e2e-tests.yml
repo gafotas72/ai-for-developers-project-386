@@ -30,8 +30,8 @@ jobs:
 #      - name: Build frontend
 #        run: cd frontend && npm install && npm run build
 #
-#      - name: Install Playwright browsers
-#        run: cd e2e-tests && ../gradlew playwright --args="install"
+      - name: Install Playwright browsers
+        run: cd e2e-tests && ../gradlew playwright --args="install"
 
       - name: Start backend
         run: |
