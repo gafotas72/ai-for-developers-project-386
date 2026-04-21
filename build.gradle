@@ -1,6 +1,6 @@
-plugins {
-    id 'checkstyle'
-}
+//plugins {
+//    id 'checkstyle'
+//}
 
 allprojects {
     group = 'com.appointments'
@@ -8,13 +8,13 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-    }
+//    apply plugin: 'java'
+//
+//    java {
+//        toolchain {
+//            languageVersion = JavaLanguageVersion.of(17)
+//        }
+//    }
 
     repositories {
         mavenCentral()

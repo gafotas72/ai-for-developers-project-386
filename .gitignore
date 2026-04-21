@@ -5,3 +5,5 @@
 generated-code/
 prompts/
 .gradle/
+.playwright-mcp/
+build/
