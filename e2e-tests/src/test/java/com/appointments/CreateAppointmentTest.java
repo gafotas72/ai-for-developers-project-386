@@ -12,7 +12,7 @@ public class CreateAppointmentTest {
 
     @Test
     void shouldCreateAppointment(final Page page) {
-        page.navigate("http://localhost:5173/owner?tab=event-types");
+        page.navigate("http://localhost:3000/owner?tab=event-types");
         page.getByRole(AriaRole.BUTTON).getByText("Создать тип").click();
         page.getByLabel("Название *").fill("Test Event");
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Создать").setExact(true)).click();
