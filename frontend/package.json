@@ -6,12 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:server": "vite build --ssr",
+    "preview": "vite preview",
+    "start": "node server/index.js"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@quasar/vite-plugin": "^1.11.0",
     "axios": "^1.15.0",
+    "express": "^4.21.0",
+    "http-proxy-middleware": "^3.0.0",
     "vue": "^3.5.31",
     "vue-router": "^5.0.4",
     "vuetify": "^4.0.5"
