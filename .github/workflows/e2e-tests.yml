@@ -49,7 +49,6 @@ jobs:
       - name: Start frontend
         run: |
           cd frontend
-#          nohup npm run preview -- --host --port 5173 > /tmp/frontend.log 2>&1 &
           nohup node server/index.js > /tmp/frontend.log 2>&1 &
           echo $!
         shell: bash
