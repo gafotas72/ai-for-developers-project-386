@@ -23,5 +23,6 @@ public interface UserMapper {
      * @param dto the DTO
      * @return entity
      */
+    //TODO Check if we really need this
     User toEntity(UserDto dto);
 }
